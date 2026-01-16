@@ -45,7 +45,12 @@ const rendererConfig = {
     rules: [
       {
         test: require.resolve(path.join(__dirname, '../src/muya/lib/assets/libs/snap.svg-min.js')),
-        use: 'imports-loader?this=>window,fix=>module.exports=0'
+        use: {
+          loader: 'imports-loader',
+          options: {
+            wrapper: 'window'
+          }
+        }
       },
       {
         test: /\.vue$/,
