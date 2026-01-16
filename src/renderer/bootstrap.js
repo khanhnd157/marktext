@@ -7,11 +7,17 @@ let exceptionLogger = s => console.error(s)
 
 const configureLogger = () => {
   const { debug, paths, windowId } = global.marktext.env
-  log.transports.console.level = process.env.NODE_ENV === 'development' ? 'info' : false // mirror to window console
-  log.transports.mainConsole = null
-  log.transports.file.resolvePath = () => path.join(paths.logPath, `editor-${windowId}.log`)
-  log.transports.file.level = debug ? 'debug' : 'info'
-  log.transports.file.sync = false
+  if (log.transports.console) {
+    log.transports.console.level = process.env.NODE_ENV === 'development' ? 'info' : false
+  }
+  if (log.transports.file) {
+    if (typeof log.transports.file.resolvePathFn !== 'undefined') {
+      log.transports.file.resolvePathFn = () => path.join(paths.logPath, `editor-${windowId}.log`)
+    } else if (typeof log.transports.file.resolvePath !== 'undefined') {
+      log.transports.file.resolvePath = () => path.join(paths.logPath, `editor-${windowId}.log`)
+    }
+    log.transports.file.level = debug ? 'debug' : 'info'
+  }
   exceptionLogger = log.error
 }
 

@@ -11,11 +11,17 @@ import setupEnvironment from './app/env'
 import { getLogLevel } from './utils'
 
 const initializeLogger = appEnvironment => {
-  log.transports.console.level = process.env.NODE_ENV === 'development' ? 'info' : 'error'
-  log.transports.rendererConsole = null
-  log.transports.file.resolvePath = () => path.join(appEnvironment.paths.logPath, 'main.log')
-  log.transports.file.level = getLogLevel()
-  log.transports.file.sync = true
+  if (log.transports.console) {
+    log.transports.console.level = process.env.NODE_ENV === 'development' ? 'info' : 'error'
+  }
+  if (log.transports.file) {
+    if (typeof log.transports.file.resolvePathFn !== 'undefined') {
+      log.transports.file.resolvePathFn = () => path.join(appEnvironment.paths.logPath, 'main.log')
+    } else if (typeof log.transports.file.resolvePath !== 'undefined') {
+      log.transports.file.resolvePath = () => path.join(appEnvironment.paths.logPath, 'main.log')
+    }
+    log.transports.file.level = getLogLevel()
+  }
   initExceptionLogger()
 }
 

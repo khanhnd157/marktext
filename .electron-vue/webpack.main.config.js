@@ -7,7 +7,7 @@ const webpack = require('webpack')
 const ESLintPlugin = require('eslint-webpack-plugin')
 
 const { getEnvironmentDefinitions } = require('./marktextEnvironment')
-const { dependencies } = require('../package.json')
+const { dependencies, optionalDependencies } = require('../package.json')
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -22,7 +22,8 @@ const mainConfig = {
     main: path.join(__dirname, '../src/main/index.js')
   },
   externals: [
-    ...Object.keys(dependencies || {})
+    ...Object.keys(dependencies || {}),
+    ...Object.keys(optionalDependencies || {})
   ],
   module: {
     rules: [

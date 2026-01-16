@@ -2,15 +2,28 @@ import { ipcMain, shell } from 'electron'
 import log from 'electron-log'
 import EventEmitter from 'events'
 import fsPromises from 'fs/promises'
-import { getCurrentKeyboardLayout, getKeyMap, onDidChangeKeyboardLayout } from 'native-keymap'
 import os from 'os'
 import path from 'path'
 
+let nativeKeymap = null
+try {
+  nativeKeymap = require('native-keymap')
+} catch (err) {
+  log.warn('native-keymap module not available, keyboard layout detection disabled')
+}
+
 let currentKeyboardInfo = null
 const loadKeyboardInfo = () => {
+  if (!nativeKeymap) {
+    currentKeyboardInfo = {
+      layout: null,
+      keymap: []
+    }
+    return currentKeyboardInfo
+  }
   currentKeyboardInfo = {
-    layout: getCurrentKeyboardLayout(),
-    keymap: getKeyMap()
+    layout: nativeKeymap.getCurrentKeyboardLayout(),
+    keymap: nativeKeymap.getKeyMap()
   }
   return currentKeyboardInfo
 }
@@ -40,10 +53,9 @@ class KeyboardLayoutMonitor extends EventEmitter {
   }
 
   _ensureNativeListener () {
-    if (!this._isSubscribed) {
+    if (!this._isSubscribed && nativeKeymap) {
       this._isSubscribed = true
-      onDidChangeKeyboardLayout(() => {
-        // The keyboard layout change event may be emitted multiple times.
+      nativeKeymap.onDidChangeKeyboardLayout(() => {
         clearTimeout(this._emitTimer)
         this._emitTimer = setTimeout(() => {
           this.emit(KEYBOARD_LAYOUT_MONITOR_CHANNEL_ID, loadKeyboardInfo())
@@ -54,7 +66,6 @@ class KeyboardLayoutMonitor extends EventEmitter {
   }
 }
 
-// Export a single-instance of the monitor.
 export const keyboardLayoutMonitor = new KeyboardLayoutMonitor()
 
 export const registerKeyboardListeners = () => {
