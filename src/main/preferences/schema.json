@@ -407,5 +407,75 @@
     "description": "Watcher--Whether to use polling. Polling may leads to high CPU utilization but is necessary to watch files over a network.",
     "type": "boolean",
     "default": false
+  },
+  "syncProvider": {
+    "description": "Sync--Cloud storage provider for sync.",
+    "enum": ["none", "dropbox", "googledrive", "onedrive"],
+    "default": "none"
+  },
+  "syncEnabled": {
+    "description": "Sync--Whether cloud sync is enabled.",
+    "type": "boolean",
+    "default": false
+  },
+  "syncMode": {
+    "description": "Sync--Sync mode (manual, auto, or interval).",
+    "enum": ["manual", "auto", "interval_5", "interval_15", "interval_30", "interval_60"],
+    "default": "manual"
+  },
+  "syncDirection": {
+    "description": "Sync--Sync direction.",
+    "enum": ["twoway", "upload", "download"],
+    "default": "twoway"
+  },
+  "syncConflictResolution": {
+    "description": "Sync--How to resolve sync conflicts.",
+    "enum": ["ask", "local", "remote", "both"],
+    "default": "ask"
+  },
+  "syncLocalFolder": {
+    "description": "Sync--Local folder path to sync.",
+    "type": "string",
+    "default": ""
+  },
+  "syncRemoteFolder": {
+    "description": "Sync--Remote folder path on cloud.",
+    "type": "string",
+    "default": "/MarkText"
+  },
+  "syncConnected": {
+    "description": "Sync--Whether connected to cloud provider.",
+    "type": "boolean",
+    "default": false
+  },
+  "syncLastTime": {
+    "description": "Sync--Last sync timestamp.",
+    "type": ["number", "null"],
+    "default": null
+  },
+  "rclonePath": {
+    "description": "Sync--Path to rclone executable.",
+    "type": "string",
+    "default": ""
+  },
+  "rcloneRemote": {
+    "description": "Sync--Rclone remote name.",
+    "type": "string",
+    "default": ""
+  },
+  "rcloneEncryptEnabled": {
+    "description": "Sync--Enable rclone crypt encryption.",
+    "type": "boolean",
+    "default": false
+  },
+  "rcloneFilenameEncryption": {
+    "description": "Sync--Filename encryption mode.",
+    "enum": ["off", "standard", "obfuscate"],
+    "default": "standard"
+  },
+  "rcloneDirectoryNameEncryption": {
+    "description": "Sync--Encrypt directory names.",
+    "type": "boolean",
+    "default": true
   }
 }

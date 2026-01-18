@@ -5,6 +5,7 @@ import ThemeIcon from '@/assets/icons/pref_theme.svg'
 import ImageIcon from '@/assets/icons/pref_image.svg'
 import SpellIcon from '@/assets/icons/pref_spellcheck.svg'
 import KeyBindingIcon from '@/assets/icons/pref_key_binding.svg'
+import SyncIcon from '@/assets/icons/pref_sync.svg'
 
 import preferences from '../../../main/preferences/schema'
 
@@ -43,6 +44,11 @@ export const category = [{
   label: 'keybindings',
   icon: KeyBindingIcon,
   path: '/preference/keybindings'
+}, {
+  name: 'Sync',
+  label: 'sync',
+  icon: SyncIcon,
+  path: '/preference/sync'
 }]
 
 export const searchContent = Object.keys(preferences).map(k => {

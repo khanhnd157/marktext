@@ -73,6 +73,21 @@ const state = {
 
   watcherUsePolling: false,
 
+  syncProvider: 'none',
+  syncEnabled: false,
+  syncMode: 'manual',
+  syncDirection: 'twoway',
+  syncConflictResolution: 'ask',
+  syncLocalFolder: '',
+  syncRemoteFolder: '/MarkText',
+  syncConnected: false,
+  syncLastTime: null,
+  rclonePath: '',
+  rcloneRemote: '',
+  rcloneEncryptEnabled: false,
+  rcloneFilenameEncryption: 'standard',
+  rcloneDirectoryNameEncryption: true,
+
   // --------------------------------------------------------------------------
 
   // Edit modes of the current window (not part of persistent settings)
