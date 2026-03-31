@@ -281,7 +281,7 @@ export default {
 
 <style>
   .source-code {
-    height: calc(100vh - var(--titleBarHeight));
+    height: 100%;
     box-sizing: border-box;
     overflow: auto;
   }

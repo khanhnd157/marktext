@@ -3,43 +3,9 @@
     class="side-bar"
     ref="sideBar"
     :class="{ 'collapsed': !showSideBar }"
-    :style="[ !showSideBar ? { 'width': '45px', 'min-width': '45px' } : !rightColumn ? { 'min-width': '45px', 'width': '45px' } : { 'width': `${finalSideBarWidth}px` } ]"
+    :style="[ !showSideBar ? { 'width': '0', 'min-width': '0' } : { 'width': `${finalSideBarWidth}px` } ]"
   >
-    <div class="left-column">
-      <ul>
-        <li
-          class="menu-trigger"
-          :class="{ active: menuVisible }"
-          @click.stop="toggleMenu"
-        >
-          <svg viewBox="0 0 16 16">
-            <path d="M1 3h14v1.5H1V3zm0 4.25h14v1.5H1v-1.5zm0 4.25h14V13H1v-1.5z" />
-          </svg>
-        </li>
-        <li
-          v-for="(c, index) of sideBarIcons"
-          :key="index"
-          @click="handleLeftIconClick(c.name)"
-          :class="{ 'active': c.name === rightColumn }"
-        >
-          <svg :viewBox="c.icon.viewBox">
-            <use :xlink:href="c.icon.url"></use>
-          </svg>
-        </li>
-      </ul>
-      <ul class="bottom">
-        <li
-          v-for="(c, index) of sideBarBottomIcons"
-          :key="index"
-          @click="handleLeftBottomClick(c.name)"
-        >
-          <svg :viewBox="c.icon.viewBox">
-            <use :xlink:href="c.icon.url"></use>
-          </svg>
-        </li>
-      </ul>
-    </div>
-    <div class="right-column" v-show="showSideBar && rightColumn">
+    <div class="right-column" v-show="showSideBar">
       <tree
         :project-tree="projectTree"
         :opened-files="openedFiles"
@@ -53,41 +19,27 @@
         v-else-if="rightColumn === 'toc'"
       ></toc>
     </div>
-    <div class="drag-bar" ref="dragBar" v-show="showSideBar && rightColumn"></div>
-    <menu-panel
-      :visible="menuVisible"
-      :anchor-x="45"
-      :anchor-y="0"
-      @update:visible="menuVisible = $event"
-      @menu-action="onMenuAction"
-    />
+    <div class="drag-bar" ref="dragBar" v-show="showSideBar"></div>
   </div>
 </template>
 
 <script>
-import { sideBarIcons, sideBarBottomIcons } from './help'
 import Tree from './tree.vue'
 import SideBarSearch from './search.vue'
 import Toc from './toc.vue'
-import MenuPanel from './menuPanel.vue'
 import { mapState } from 'vuex'
-import bus from '@/bus'
 
 export default {
   data () {
-    this.sideBarIcons = sideBarIcons
-    this.sideBarBottomIcons = sideBarBottomIcons
     return {
       openedFiles: [],
-      sideBarViewWidth: 280,
-      menuVisible: false
+      sideBarViewWidth: 280
     }
   },
   components: {
     Tree,
     SideBarSearch,
-    Toc,
-    MenuPanel
+    Toc
   },
   computed: {
     ...mapState({
@@ -98,9 +50,8 @@ export default {
       tabs: state => state.editor.tabs
     }),
     finalSideBarWidth () {
-      const { showSideBar, rightColumn, sideBarViewWidth } = this
+      const { showSideBar, sideBarViewWidth } = this
       if (!showSideBar) return 0
-      if (rightColumn === '') return 45
       return sideBarViewWidth < 220 ? 220 : sideBarViewWidth
     }
   },
@@ -148,17 +99,6 @@ export default {
           this.$store.dispatch('CHANGE_SIDE_BAR_WIDTH', this.finalSideBarWidth)
         }
       }
-    },
-    handleLeftBottomClick (name) {
-      if (name === 'settings') {
-        this.$store.dispatch('OPEN_SETTING_WINDOW')
-      }
-    },
-    toggleMenu () {
-      this.menuVisible = !this.menuVisible
-    },
-    onMenuAction (menuId) {
-      bus.$emit('menu-event', menuId)
     }
   }
 }
@@ -170,80 +110,22 @@ export default {
     flex-shrink: 0;
     flex-grow: 0;
     width: 280px;
-    height: 100vh;
-    min-width: 45px;
+    height: 100%;
+    min-width: 0;
     position: relative;
     color: var(--sideBarColor);
     user-select: none;
     background: var(--sideBarBgColor);
     border-right: 1px solid var(--itemBgColor);
     z-index: 3;
-    & .left-column {
-      & svg {
-        fill: var(--iconColor);
-      }
-    }
+    transition: width .15s ease;
   }
-  .side-bar.collapsed .left-column ul li:not(.menu-trigger) {
-    opacity: .4;
-  }
-
-  .left-column {
-    height: 100%;
-    width: 45px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-top: 4px;
-    box-sizing: border-box;
-    & > ul {
-      opacity: 1;
-    }
-  }
-
-  .left-column ul {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-    & > li {
-      width: 45px;
-      height: 45px;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      cursor: pointer;
-      & > svg {
-        width: 18px;
-        height: 18px;
-        fill: var(--sideBarIconColor);
-        opacity: 1;
-        transition: transform .25s ease-in-out;
-      }
-      &.active > svg {
-        fill: var(--themeColor);
-      }
-    }
-  }
-
-  .left-column ul li.menu-trigger {
-    margin-bottom: 8px;
-    border-bottom: 1px solid var(--floatBorderColor);
-    padding-bottom: 8px;
-  }
-  .left-column ul li.menu-trigger > svg {
-    width: 16px;
-    height: 16px;
-  }
-  .side-bar:hover .left-column ul li svg {
-    opacity: 1;
+  .side-bar.collapsed {
+    border-right: none;
   }
   .right-column {
     flex: 1;
-    width: calc(100% - 50px);
+    width: 100%;
     overflow: hidden;
   }
   .drag-bar {
