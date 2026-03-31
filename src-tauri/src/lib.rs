@@ -44,14 +44,6 @@ pub fn run() {
             commands::window::create_settings_window,
         ])
         .setup(|app| {
-            let app_menu = menu::create_app_menu(app.handle())?;
-            app.set_menu(app_menu)?;
-
-            app.on_menu_event(|app, event| {
-                use tauri::Emitter;
-                let _ = app.emit("menu-event", event.id().0.clone());
-            });
-
             #[cfg(debug_assertions)]
             {
                 if let Some(window) = app.get_webview_window("main") {

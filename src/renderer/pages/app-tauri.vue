@@ -1,6 +1,6 @@
 <template>
   <div class="editor-container">
-    <side-bar v-if="init"></side-bar>
+    <side-bar></side-bar>
     <div class="editor-middle">
       <title-bar
         :project="projectTree"
@@ -37,6 +37,7 @@ import { mapState } from 'vuex'
 import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
 import { open, save } from '@tauri-apps/plugin-dialog'
+import { appDataDir } from '@tauri-apps/api/path'
 import { addStyles, addThemeStyle } from '@/util/theme'
 import bus from '@/bus'
 import Recent from '@/components/recent'
@@ -101,6 +102,7 @@ export default {
   async created () {
     const { commit, dispatch } = this.$store
 
+    await this.initGlobalMarktext()
     await this.loadPreferences()
 
     dispatch('LISTEN_COMMAND_CENTER_BUS')
@@ -133,8 +135,8 @@ export default {
     dispatch('LISTEN_FOR_RELOAD_IMAGES')
     dispatch('LISTEN_FOR_NOTIFICATION')
 
-    listen('menu-event', (event) => {
-      this.handleMenuEvent(event.payload)
+    bus.$on('menu-event', (menuId) => {
+      this.handleMenuEvent(menuId)
     })
 
     listen('fs-change', (event) => {
@@ -163,6 +165,37 @@ export default {
     })
   },
   methods: {
+    async initGlobalMarktext () {
+      let userDataPath = ''
+      try {
+        userDataPath = await appDataDir()
+      } catch (_) {
+        userDataPath = ''
+      }
+      const sep = navigator.platform.includes('Win') ? '\\' : '/'
+      const join = (...parts) => parts.join(sep)
+      const currentDate = new Date()
+      global.marktext = {
+        initialState: {},
+        env: {
+          debug: false,
+          paths: null,
+          windowId: 1,
+          type: 'editor'
+        },
+        paths: {
+          userDataPath,
+          electronUserDataPath: userDataPath,
+          logPath: join(userDataPath, 'logs', `${currentDate.getFullYear()}${currentDate.getMonth() + 1}`),
+          preferencesPath: userDataPath,
+          dataCenterPath: userDataPath,
+          preferencesFilePath: join(userDataPath, 'preference.json'),
+          ripgrepBinaryPath: ''
+        }
+      }
+      global.marktext.env.paths = global.marktext.paths
+    },
+
     async loadPreferences () {
       try {
         const prefs = await invoke('get_preferences')
