@@ -38,6 +38,7 @@ import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
 import { open, save } from '@tauri-apps/plugin-dialog'
 import { appDataDir } from '@tauri-apps/api/path'
+import { ipcRenderer } from 'electron'
 import { addStyles, addThemeStyle } from '@/util/theme'
 import bus from '@/bus'
 import Recent from '@/components/recent'
@@ -140,9 +141,9 @@ export default {
     })
 
     listen('fs-change', (event) => {
-      const { path, kind } = event.payload || {}
-      if (path && kind) {
-        bus.$emit('file-changed-on-disk', { path, kind })
+      const { path: filePath, kind } = event.payload || {}
+      if (filePath && kind) {
+        ipcRenderer._dispatch('mt::update-file', { type: kind, change: { path: filePath } })
       }
     })
 
@@ -284,6 +285,12 @@ export default {
           case 'u':
             e.preventDefault()
             bus.$emit('format', { type: 'u' })
+            break
+          case 'p':
+            if (e.shiftKey) {
+              e.preventDefault()
+              bus.$emit('show-command-palette')
+            }
             break
           case 'l':
             e.preventDefault()
