@@ -34,7 +34,7 @@
   </div>
 </template>
 <script>
-import { ipcRenderer } from 'electron'
+import { onEvent, offEvent } from '@/services/tauri-events'
 import { category, searchContent } from './config'
 
 export default {
@@ -82,7 +82,7 @@ export default {
         })
       }
     },
-    onIpcCategoryChange (event, category) {
+    onIpcCategoryChange (category) {
       const validRoute = category && this.$router.getRoutes().findIndex(route => route.path.endsWith(`/${category}`)) !== -1
       if (validRoute) {
         this.$router.push({
@@ -97,10 +97,10 @@ export default {
     if (this.$route && this.$route.name) {
       this.currentCategory = this.$route.name
     }
-    ipcRenderer.on('settings::change-tab', this.onIpcCategoryChange)
+    onEvent('settings::change-tab', this.onIpcCategoryChange)
   },
   unmounted () {
-    ipcRenderer.removeAllListener('settings::change-tab', this.onIpcCategoryChange)
+    offEvent('settings::change-tab', this.onIpcCategoryChange)
   }
 }
 </script>

@@ -1,5 +1,5 @@
-import { ipcRenderer } from 'electron'
 import bus from '../bus'
+import { onEvent } from '@/services/tauri-events'
 
 const state = {}
 
@@ -9,7 +9,7 @@ const mutations = {}
 
 const actions = {
   LISTEN_FOR_TWEET () {
-    ipcRenderer.on('mt::tweet', (e, type) => {
+    onEvent('mt::tweet', (type) => {
       if (type === 'twitter') {
         bus.$emit('tweetDialog')
       }

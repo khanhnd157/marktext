@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron'
+import { emitEvent } from '@/services/tauri-events'
 import { delay } from '@/util'
 import bus from '../bus'
 
@@ -52,7 +52,7 @@ class TrailingNewlineCommand {
   }
 
   executeSubcommand = async (_, value) => {
-    ipcRenderer.emit('mt::set-final-newline', null, value)
+    emitEvent('mt::set-final-newline', value)
   }
 
   unload = () => {}

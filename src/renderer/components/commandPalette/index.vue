@@ -52,7 +52,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import log from 'electron-log'
+const log = { error: console.error, warn: console.warn, info: console.info }
 import bus from '../../bus'
 import loading from '../loading'
 

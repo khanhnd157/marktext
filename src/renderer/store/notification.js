@@ -1,5 +1,6 @@
-import { ipcRenderer, shell } from 'electron'
 import notice from '../services/notification'
+import { openExternal } from '@/services/tauri-api'
+import { onEvent } from '@/services/tauri-events'
 
 const state = {}
 
@@ -16,17 +17,16 @@ const actions = {
       message: 'You should never see this message'
     }
 
-    ipcRenderer.on('mt::show-notification', (e, opts) => {
+    onEvent('mt::show-notification', (opts) => {
       const options = Object.assign(DEFAULT_OPTS, opts)
-
       notice.notify(options)
     })
 
-    ipcRenderer.on('mt::pandoc-not-exists', async (e, opts) => {
+    onEvent('mt::pandoc-not-exists', async (opts) => {
       const options = Object.assign(DEFAULT_OPTS, opts)
       options.showConfirm = true
       await notice.notify(options)
-      shell.openExternal('http://pandoc.org')
+      openExternal('http://pandoc.org')
     })
   }
 }

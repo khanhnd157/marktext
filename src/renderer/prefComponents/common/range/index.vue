@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { shell } from 'electron'
+import { openExternal } from '@/services/tauri-api'
 
 export default {
   data () {
@@ -50,7 +50,7 @@ export default {
   methods: {
     handleMoreClick () {
       if (typeof this.more === 'string') {
-        shell.openExternal(this.more)
+        openExternal(this.more)
       }
     },
     select (value) {

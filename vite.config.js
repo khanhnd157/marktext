@@ -65,7 +65,7 @@ export default defineConfig({
           querystring: 'empty-shim.js',
         }
         if (source in shimMap && shimMap[source] !== null) {
-          return path.resolve(__dirname, 'src/renderer/shims', shimMap[source])
+          return path.resolve(__dirname, 'src/renderer/polyfills', shimMap[source])
         }
         return null
       }
@@ -78,23 +78,18 @@ export default defineConfig({
       'common': path.resolve(__dirname, 'src/common'),
       snapsvg: path.resolve(__dirname, 'src/muya/lib/assets/libs/snap.svg-min.js'),
       path: 'path-browserify',
-      'fontmanager-redux': path.resolve(__dirname, 'src/renderer/shims/fontmanager-shim.js'),
-      'electron': path.resolve(__dirname, 'src/renderer/shims/electron-shim.js'),
-      'electron-log': path.resolve(__dirname, 'src/renderer/shims/electron-log-shim.js'),
-      'electron-store': path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      'vue-electron': path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      '@electron/remote': path.resolve(__dirname, 'src/renderer/shims/electron-remote-shim.js'),
-      'source-map-support': path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      'keytar': path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      'native-keymap': path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      'vscode-ripgrep': path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      'command-exists': path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      child_process: path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      os: path.resolve(__dirname, 'src/renderer/shims/os-shim.js'),
-      crypto: path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      zlib: path.resolve(__dirname, 'src/renderer/shims/empty-shim.js'),
-      'fs-extra': path.resolve(__dirname, 'src/renderer/shims/fs-shim.js'),
-      'graceful-fs': path.resolve(__dirname, 'src/renderer/shims/fs-shim.js'),
+      'fontmanager-redux': path.resolve(__dirname, 'src/renderer/polyfills/fontmanager-shim.js'),
+      child_process: path.resolve(__dirname, 'src/renderer/polyfills/empty-shim.js'),
+      os: path.resolve(__dirname, 'src/renderer/polyfills/os-shim.js'),
+      crypto: path.resolve(__dirname, 'src/renderer/polyfills/empty-shim.js'),
+      zlib: path.resolve(__dirname, 'src/renderer/polyfills/empty-shim.js'),
+      'fs-extra': path.resolve(__dirname, 'src/renderer/polyfills/fs-shim.js'),
+      'graceful-fs': path.resolve(__dirname, 'src/renderer/polyfills/fs-shim.js'),
+      'keytar': path.resolve(__dirname, 'src/renderer/polyfills/empty-shim.js'),
+      'native-keymap': path.resolve(__dirname, 'src/renderer/polyfills/empty-shim.js'),
+      'vscode-ripgrep': path.resolve(__dirname, 'src/renderer/polyfills/empty-shim.js'),
+      'command-exists': path.resolve(__dirname, 'src/renderer/polyfills/empty-shim.js'),
+      '@hfelix/electron-localshortcut': path.resolve(__dirname, 'src/renderer/polyfills/empty-shim.js'),
     },
     extensions: ['.js', '.ts', '.vue', '.json', '.css']
   },

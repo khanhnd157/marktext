@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron'
+import { emitEvent } from '@/services/tauri-events'
 import { delay } from '@/util'
 import bus from '../bus'
 
@@ -46,7 +46,7 @@ class LineEndingCommand {
   }
 
   executeSubcommand = async (_, value) => {
-    ipcRenderer.emit('mt::set-line-ending', null, value)
+    emitEvent('mt::set-line-ending', value)
   }
 
   unload = () => {}

@@ -77,8 +77,8 @@
 </template>
 
 <script>
-import { getCurrentWindow } from '@electron/remote'
 import { mapState } from 'vuex'
+import { minimizeWindow, maximizeWindow, closeWindow, isMaximized as checkMaximized } from '@/services/tauri-api'
 import { minimizePath, restorePath, maximizePath, closePath } from '../../assets/window-controls.js'
 import { PATH_SEPARATOR } from '../../config'
 
@@ -141,18 +141,14 @@ export default {
       this.show = ITEMS[index]
     },
     handleCloseClick () {
-      getCurrentWindow().close()
+      closeWindow()
     },
-    handleMaximizeClick () {
-      const win = getCurrentWindow()
-      if (win.isMaximized()) {
-        win.unmaximize()
-      } else {
-        win.maximize()
-      }
+    async handleMaximizeClick () {
+      await maximizeWindow()
+      this.isMaximized = await checkMaximized()
     },
     handleMinimizeClick () {
-      getCurrentWindow().minimize()
+      minimizeWindow()
     },
     rename () {
       this.$store.dispatch('RESPONSE_FOR_RENAME')

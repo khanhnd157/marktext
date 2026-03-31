@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { shell } from 'electron'
+import { openExternal } from '@/services/tauri-api'
 
 export default {
   data () {
@@ -24,7 +24,7 @@ export default {
   methods: {
     openUrl (link) {
       if (link) {
-        shell.openExternal(link)
+        openExternal(link)
       }
     }
   }

@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import { ipcRenderer } from 'electron'
+import { onEvent } from '@/services/tauri-events'
 
 import listenForMain from './listenForMain'
 import project from './project'
@@ -31,7 +31,7 @@ const mutations = {
 
 const actions = {
   LINTEN_WIN_STATUS ({ commit, state }) {
-    ipcRenderer.on('mt::window-active-status', (e, { status }) => {
+    onEvent('mt::window-active-status', ({ status }) => {
       commit('SET_WIN_STATUS', status)
     })
   },

@@ -75,9 +75,8 @@
 </template>
 
 <script>
-import { shell } from 'electron'
 import path from 'path'
-import log from 'electron-log'
+import { openExternal } from '@/services/tauri-api'
 import { mapState } from 'vuex'
 // import ViewImage from 'view-image'
 import { isChildOfDirectory } from 'common/filesystem/paths'
@@ -667,7 +666,7 @@ export default {
   },
   methods: {
     photoCreatorClick: (url) => {
-      shell.openExternal(url)
+      openExternal(url)
     },
 
     jumpClick (linkInfo) {
@@ -808,8 +807,8 @@ export default {
           }
         })
         .catch(error => {
-          log.error(`Error while switching to language "${languageCode}":`)
-          log.error(error)
+          console.error(`Error while switching to language "${languageCode}":`)
+          console.error(error)
 
           notice.notify({
             title: 'Spelling',
@@ -954,7 +953,7 @@ export default {
             })
             this.$store.dispatch('EXPORT', { type, content })
           } catch (err) {
-            log.error('Failed to export document:', err)
+            console.error('Failed to export document:', err)
             notice.notify({
               title: `Printing/Exporting ${htmlTitle || 'html'} failed`,
               type: 'error',
@@ -983,7 +982,7 @@ export default {
             this.printer.renderMarkdown(html, true)
             this.$store.dispatch('EXPORT', { type, pageOptions })
           } catch (err) {
-            log.error('Failed to export document:', err)
+            console.error('Failed to export document:', err)
             notice.notify({
               title: 'Printing/Exporting failed',
               type: 'error',
@@ -1008,7 +1007,7 @@ export default {
             this.printer.renderMarkdown(html, true)
             this.$store.dispatch('PRINT_RESPONSE')
           } catch (err) {
-            log.error('Failed to export document:', err)
+            console.error('Failed to export document:', err)
             notice.notify({
               title: 'Printing/Exporting failed',
               type: 'error',

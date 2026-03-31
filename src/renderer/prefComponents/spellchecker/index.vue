@@ -61,8 +61,8 @@
 </template>
 
 <script>
-import { ipcRenderer } from 'electron'
-import log from 'electron-log'
+import { invoke } from '@/services/tauri-api'
+const log = { error: console.error, warn: console.warn, info: console.info }
 import { mapState } from 'vuex'
 import Compound from '../common/compound'
 import CurSelect from '../common/select'
@@ -102,7 +102,7 @@ export default {
           this.availableDictionaries = dicts
         })
 
-      ipcRenderer.invoke('mt::spellchecker-get-custom-dictionary-words')
+      invoke('spellchecker_get_custom_dictionary_words')
         .then(words => {
           this.wordsInCustomDictionary = words.map(word => { return { word } })
         })
@@ -147,7 +147,7 @@ export default {
     },
     handleDeleteClick (selectedItem) {
       if (selectedItem && typeof selectedItem.word === 'string') {
-        ipcRenderer.invoke('mt::spellchecker-remove-word', selectedItem.word)
+        invoke('spellchecker_remove_word', selectedItem.word)
           .then(success => {
             if (success) {
               this.wordsInCustomDictionary = this.wordsInCustomDictionary.filter(item => item.word !== selectedItem.word)

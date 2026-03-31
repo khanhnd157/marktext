@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron'
+import { emitEvent } from '@/services/tauri-events'
 import { ENCODING_NAME_MAP, getEncodingName } from 'common/encoding'
 import { delay } from '@/util'
 import bus from '../bus'
@@ -60,7 +60,7 @@ class FileEncodingCommand {
   executeSubcommand = async id => {
     // NOTE: We support UTF-BOM encodings but don't allow to set them.
     if (!id.endsWith('-bom')) {
-      ipcRenderer.emit('mt::set-file-encoding', null, id)
+      emitEvent('mt::set-file-encoding', id)
     }
   }
 

@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { shell } from 'electron'
+import { openExternal } from '@/services/tauri-api'
 import services, { isValidService } from './services.js'
 import legalNoticesCheckbox from './legalNoticesCheckbox'
 import { isFileExecutableSync } from '@/util/fileSystem'
@@ -166,7 +166,7 @@ export default {
     },
 
     open (link) {
-      shell.openExternal(link)
+      openExternal(link)
     },
 
     save (type) {

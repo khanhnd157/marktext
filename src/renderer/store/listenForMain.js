@@ -1,5 +1,5 @@
-import { ipcRenderer } from 'electron'
 import bus from '../bus'
+import { onEvent } from '@/services/tauri-events'
 
 const state = {}
 
@@ -9,7 +9,7 @@ const mutations = {}
 
 const actions = {
   LISTEN_FOR_EDIT ({ commit }) {
-    ipcRenderer.on('mt::editor-edit-action', (e, type) => {
+    onEvent('mt::editor-edit-action', (type) => {
       if (type === 'findInFolder') {
         commit('SET_LAYOUT', {
           rightColumn: 'search',
@@ -21,19 +21,19 @@ const actions = {
   },
 
   LISTEN_FOR_SHOW_DIALOG ({ commit }) {
-    ipcRenderer.on('mt::about-dialog', e => {
+    onEvent('mt::about-dialog', () => {
       bus.$emit('aboutDialog')
     })
-    ipcRenderer.on('mt::show-export-dialog', (e, type) => {
+    onEvent('mt::show-export-dialog', (type) => {
       bus.$emit('showExportDialog', type)
     })
   },
 
   LISTEN_FOR_PARAGRAPH_INLINE_STYLE () {
-    ipcRenderer.on('mt::editor-paragraph-action', (e, { type }) => {
+    onEvent('mt::editor-paragraph-action', ({ type }) => {
       bus.$emit('paragraph', type)
     })
-    ipcRenderer.on('mt::editor-format-action', (e, { type }) => {
+    onEvent('mt::editor-format-action', ({ type }) => {
       bus.$emit('format', type)
     })
   }

@@ -4,9 +4,9 @@
   "identifier": "com.marktext.app",
   "version": "0.17.1",
   "build": {
-    "beforeDevCommand": "npm run tauri:dev-server",
+    "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "npm run tauri:build-frontend",
+    "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
   "app": {

@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron'
+import { invoke } from '@/services/tauri-api'
 import { isOsx } from '@/util'
 
 /**
@@ -38,7 +38,7 @@ export class SpellChecker {
       this.isProviderAvailable = true
       if (isOsx) {
         // No language string needed on macOS.
-        return await ipcRenderer.invoke('mt::spellchecker-set-enabled', true)
+        return await invoke('spellchecker_set_enabled', true)
       }
       return await this.switchLanguage(lang || this.currentSpellcheckerLanguage)
     } catch (error) {
@@ -53,7 +53,7 @@ export class SpellChecker {
   deactivateSpellchecker () {
     this.enabled = false
     this.isProviderAvailable = false
-    ipcRenderer.invoke('mt::spellchecker-set-enabled', false)
+    invoke('spellchecker_set_enabled', false)
   }
 
   /**
@@ -85,7 +85,7 @@ export class SpellChecker {
     } else if (!lang) {
       throw new Error('Expected non-empty language for spell checker.')
     } else if (this.isEnabled) {
-      await ipcRenderer.invoke('mt::spellchecker-switch-language', lang)
+      await invoke('spellchecker_switch_language', lang)
       this.lang = lang
       return true
     }
@@ -101,6 +101,6 @@ export class SpellChecker {
       // NB: On macOS the OS spell checker is used and will detect the language automatically.
       return []
     }
-    return ipcRenderer.invoke('mt::spellchecker-get-available-dictionaries')
+    return invoke('spellchecker_get_available_dictionaries')
   }
 }

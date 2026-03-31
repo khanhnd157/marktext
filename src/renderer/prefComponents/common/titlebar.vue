@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { getCurrentWindow } from '@electron/remote'
+import { closeWindow } from '@/services/tauri-api'
 import { closePath } from '../../assets/window-controls.js'
 
 export default {
@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     handleCloseClick () {
-      getCurrentWindow().close()
+      closeWindow()
     }
   }
 }

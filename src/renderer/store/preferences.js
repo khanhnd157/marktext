@@ -1,7 +1,7 @@
-import { ipcRenderer } from 'electron'
 import bus from '../bus'
+import { setPreference, showSelectDirectoryDialog, getPreferences } from '@/services/tauri-api'
+import { onEvent } from '@/services/tauri-events'
 
-// user preference
 const state = {
   autoSave: false,
   autoSaveDelay: 5000,
@@ -60,7 +60,6 @@ const state = {
   spellcheckerNoUnderline: false,
   spellcheckerLanguage: 'en-US',
 
-  // Default values that are overwritten with the entries below.
   sideBarVisibility: false,
   tabBarVisibility: false,
   sourceCodeModeEnabled: false,
@@ -73,14 +72,10 @@ const state = {
 
   watcherUsePolling: false,
 
-  // --------------------------------------------------------------------------
+  typewriter: false,
+  focus: false,
+  sourceCode: false,
 
-  // Edit modes of the current window (not part of persistent settings)
-  typewriter: false, // typewriter mode
-  focus: false, // focus mode
-  sourceCode: false, // source code mode
-
-  // user configration
   imageFolderPath: '',
   webImages: [],
   cloudImages: [],
@@ -115,43 +110,49 @@ const mutations = {
 }
 
 const actions = {
-  ASK_FOR_USER_PREFERENCE ({ commit }) {
-    ipcRenderer.send('mt::ask-for-user-preference')
-    ipcRenderer.send('mt::ask-for-user-data')
-
-    ipcRenderer.on('mt::user-preference', (e, preferences) => {
-      commit('SET_USER_PREFERENCE', preferences)
-    })
+  async ASK_FOR_USER_PREFERENCE ({ commit }) {
+    try {
+      const preferences = await getPreferences()
+      if (preferences) {
+        commit('SET_USER_PREFERENCE', preferences)
+      }
+    } catch (e) {
+      console.warn('[preferences] get_preferences failed:', e)
+    }
   },
 
   SET_SINGLE_PREFERENCE ({ commit }, { type, value }) {
-    // save to electron-store
-    ipcRenderer.send('mt::set-user-preference', { [type]: value })
+    setPreference(type, value)
   },
 
   SET_USER_DATA ({ commit }, { type, value }) {
-    ipcRenderer.send('mt::set-user-data', { [type]: value })
+    setPreference(type, value)
   },
 
-  SET_IMAGE_FOLDER_PATH ({ commit }, value) {
-    ipcRenderer.send('mt::ask-for-modify-image-folder-path', value)
+  async SET_IMAGE_FOLDER_PATH ({ commit }, value) {
+    const folder = await showSelectDirectoryDialog(value)
+    if (folder) {
+      setPreference('imageFolderPath', folder)
+    }
   },
 
-  SELECT_DEFAULT_DIRECTORY_TO_OPEN ({ commit }) {
-    ipcRenderer.send('mt::select-default-directory-to-open')
+  async SELECT_DEFAULT_DIRECTORY_TO_OPEN ({ commit }) {
+    const folder = await showSelectDirectoryDialog()
+    if (folder) {
+      setPreference('defaultDirectoryToOpen', folder)
+    }
   },
 
   LISTEN_FOR_VIEW ({ commit, dispatch }) {
-    ipcRenderer.on('mt::show-command-palette', () => {
+    onEvent('mt::show-command-palette', () => {
       bus.$emit('show-command-palette')
     })
-    ipcRenderer.on('mt::toggle-view-mode-entry', (event, entryName) => {
+    onEvent('mt::toggle-view-mode-entry', (entryName) => {
       commit('TOGGLE_VIEW_MODE', entryName)
       dispatch('DISPATCH_EDITOR_VIEW_STATE', { [entryName]: state[entryName] })
     })
   },
 
-  // Toggle a view option and notify main process to toggle menu item.
   LISTEN_TOGGLE_VIEW ({ commit, dispatch, state }) {
     bus.$on('view:toggle-view-entry', entryName => {
       commit('TOGGLE_VIEW_MODE', entryName)
@@ -160,8 +161,7 @@ const actions = {
   },
 
   DISPATCH_EDITOR_VIEW_STATE (_, viewState) {
-    const { windowId } = global.marktext.env
-    ipcRenderer.send('mt::view-layout-changed', windowId, viewState)
+    // no-op in Tauri (no native menu to sync)
   }
 }
 

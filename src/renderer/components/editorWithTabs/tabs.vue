@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import { shell, clipboard } from 'electron'
 import { mapState } from 'vuex'
+import { clipboardWriteText, showItemInFolder } from '@/services/tauri-api'
 import autoScroll from 'dom-autoscroller'
 import dragula from 'dragula'
 import { tabsMixins } from '../../mixins'
@@ -104,13 +104,13 @@ export default {
     copyPath (tabId) {
       const tab = this.tabs.find(f => f.id === tabId)
       if (tab && tab.pathname) {
-        clipboard.writeText(tab.pathname)
+        clipboardWriteText(tab.pathname)
       }
     },
     showInFolder (tabId) {
       const tab = this.tabs.find(f => f.id === tabId)
       if (tab && tab.pathname) {
-        shell.showItemInFolder(tab.pathname)
+        showItemInFolder(tab.pathname)
       }
     },
     handleContextMenu (event, tab) {

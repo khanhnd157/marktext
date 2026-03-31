@@ -30,7 +30,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { shell } from 'electron'
+import { openPath } from '@/services/tauri-api'
 import Bool from '@/prefComponents/common/bool'
 import Compound from '@/prefComponents/common/compound'
 import TextBox from '@/prefComponents/common/textBox'
@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     openImageFolder () {
-      shell.openPath(this.imageFolderPath)
+      openPath(this.imageFolderPath)
     },
     modifyImageFolderPath (value) {
       return this.$store.dispatch('SET_IMAGE_FOLDER_PATH', value)

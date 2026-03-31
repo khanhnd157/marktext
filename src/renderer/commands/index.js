@@ -1,6 +1,6 @@
 // List of all static commands that are loaded into command center.
-import { ipcRenderer, shell } from 'electron'
-import { getCurrentWindow } from '@electron/remote'
+import { openExternal, minimizeWindow, toggleFullscreen } from '@/services/tauri-api'
+import { emitEvent } from '@/services/tauri-events'
 import bus from '../bus'
 import { delay, isOsx } from '@/util'
 import { isUpdatable } from './utils'
@@ -41,32 +41,32 @@ const commands = [
   {
     id: 'file.new-tab',
     execute: async () => {
-      ipcRenderer.emit('mt::new-untitled-tab', null)
+      emitEvent('mt::new-untitled-tab')
     }
   }, {
     id: 'file.new-window',
     execute: async () => {
-      ipcRenderer.send('mt::cmd-new-editor-window')
+      emitEvent('mt::cmd-new-editor-window')
     }
   }, {
     id: 'file.open-file',
     execute: async () => {
-      ipcRenderer.send('mt::cmd-open-file')
+      emitEvent('mt::cmd-open-file')
     }
   }, {
     id: 'file.open-folder',
     execute: async () => {
-      ipcRenderer.send('mt::cmd-open-folder')
+      emitEvent('mt::cmd-open-folder')
     }
   }, {
     id: 'file.save',
     execute: async () => {
-      ipcRenderer.emit('mt::editor-ask-file-save', null)
+      emitEvent('mt::editor-ask-file-save')
     }
   }, {
     id: 'file.save-as',
     execute: async () => {
-      ipcRenderer.emit('mt::editor-ask-file-save-as', null)
+      emitEvent('mt::editor-ask-file-save-as')
     }
   }, {
     id: 'file.print',
@@ -77,35 +77,35 @@ const commands = [
   }, {
     id: 'file.close-tab',
     execute: async () => {
-      ipcRenderer.emit('mt::editor-close-tab', null)
+      emitEvent('mt::editor-close-tab')
     }
   }, {
     id: 'file.close-window',
     execute: async () => {
-      ipcRenderer.send('mt::cmd-close-window')
+      emitEvent('mt::cmd-close-window')
     }
   },
 
   {
     id: 'file.toggle-auto-save',
     execute: async () => {
-      ipcRenderer.send('mt::cmd-toggle-autosave')
+      emitEvent('mt::cmd-toggle-autosave')
     }
   }, {
     id: 'file.move-file',
     execute: async () => {
-      ipcRenderer.emit('mt::editor-move-file', null)
+      emitEvent('mt::editor-move-file')
     }
   }, {
     id: 'file.rename-file',
     execute: async () => {
       await delay(50)
-      ipcRenderer.emit('mt::editor-rename-file', null)
+      emitEvent('mt::editor-rename-file')
     }
   }, {
     id: 'file.import-file',
     execute: async () => {
-      ipcRenderer.send('mt::cmd-import-file')
+      emitEvent('mt::cmd-import-file')
     }
   }, {
     id: 'file.export-file',
@@ -197,7 +197,7 @@ const commands = [
     id: 'edit.find-in-folder',
     execute: async () => {
       await delay(150)
-      ipcRenderer.emit('mt::editor-edit-action', null, 'findInFolder')
+      emitEvent('mt::editor-edit-action', 'findInFolder')
     }
   },
 
@@ -450,18 +450,17 @@ const commands = [
   {
     id: 'window.minimize',
     execute: async () => {
-      getCurrentWindow().minimize()
+      await minimizeWindow()
     }
   }, {
     id: 'window.toggle-always-on-top',
     execute: async () => {
-      ipcRenderer.send('mt::window-toggle-always-on-top')
+      emitEvent('mt::window-toggle-always-on-top')
     }
   }, {
     id: 'window.toggle-full-screen',
     execute: async () => {
-      const win = getCurrentWindow()
-      win.setFullScreen(!win.isFullScreen())
+      await toggleFullscreen()
     }
   },
 
@@ -518,7 +517,7 @@ const commands = [
       value: 2.0
     }],
     executeSubcommand: async (_, value) => {
-      ipcRenderer.emit('mt::window-zoom', null, value)
+      emitEvent('mt::window-zoom', value)
     }
   },
 
@@ -553,7 +552,7 @@ const commands = [
       value: 'ulysses'
     }],
     executeSubcommand: async (_, theme) => {
-      ipcRenderer.send('mt::set-user-preference', { theme })
+      emitEvent('mt::set-user-preference', { theme })
     }
   },
 
@@ -603,7 +602,7 @@ const commands = [
       value: 'rtl'
     }],
     executeSubcommand: async (_, value) => {
-      ipcRenderer.send('mt::set-user-preference', { textDirection: value })
+      emitEvent('mt::set-user-preference', { textDirection: value })
     }
   },
 
@@ -613,22 +612,22 @@ const commands = [
   {
     id: 'file.preferences',
     execute: async () => {
-      ipcRenderer.send('mt::open-setting-window')
+      emitEvent('mt::open-setting-window')
     }
   }, {
     id: 'file.quit',
     execute: async () => {
-      ipcRenderer.send('mt::app-try-quit')
+      emitEvent('mt::app-try-quit')
     }
   }, {
     id: 'docs.user-guide',
     execute: async () => {
-      shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/README.md')
+      openExternal('https://github.com/marktext/marktext/blob/master/docs/README.md')
     }
   }, {
     id: 'docs.markdown-syntax',
     execute: async () => {
-      shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/MARKDOWN_SYNTAX.md')
+      openExternal('https://github.com/marktext/marktext/blob/master/docs/MARKDOWN_SYNTAX.md')
     }
   },
 
@@ -638,12 +637,12 @@ const commands = [
   {
     id: 'tabs.cycle-forward',
     execute: async () => {
-      ipcRenderer.emit('mt::tabs-cycle-right', null)
+      emitEvent('mt::tabs-cycle-right')
     }
   }, {
     id: 'tabs.cycle-backward',
     execute: async () => {
-      ipcRenderer.emit('mt::tabs-cycle-left', null)
+      emitEvent('mt::tabs-cycle-left')
     }
   }
 ]
@@ -655,7 +654,7 @@ if (isUpdatable()) {
   commands.push({
     id: 'file.check-update',
     execute: async () => {
-      ipcRenderer.send('mt::check-for-update')
+      emitEvent('mt::check-for-update')
     }
   })
 }
@@ -664,7 +663,7 @@ if (isOsx) {
   commands.push({
     id: 'edit.screenshot',
     execute: async () => {
-      ipcRenderer.send('mt::make-screenshot')
+      emitEvent('mt::make-screenshot')
     }
   })
 }

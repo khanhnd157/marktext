@@ -47,8 +47,8 @@
 </template>
 
 <script>
-import { ipcRenderer, shell } from 'electron'
-import log from 'electron-log'
+import { openExternal, invoke } from '@/services/tauri-api'
+const log = { error: console.error, warn: console.warn, info: console.info }
 import { setKeyboardLayout } from '@hfelix/electron-localshortcut'
 import Compound from '../common/compound'
 import Separator from '../common/separator'
@@ -72,14 +72,14 @@ export default {
   },
 
   mounted () {
-    ipcRenderer.invoke('mt::keybinding-get-keyboard-info')
+    invoke('keybinding_get_keyboard_info')
       .then(({ layout, keymap }) => {
         // Update the key mapper to prevent problems on non-US keyboards.
         setKeyboardLayout(layout, keymap)
       })
       .catch(error => log.error('Error while loading keyboard information for settings:', error))
 
-    ipcRenderer.invoke('mt::keybinding-get-pref-keybindings')
+    invoke('keybinding_get_pref_keybindings')
       .then(({ defaultKeybindings, userKeybindings }) => {
         this.keybindingConfigurator = new KeybindingConfigurator(defaultKeybindings, userKeybindings)
         this.keybindingList = this.keybindingConfigurator.getKeybindings()
@@ -98,7 +98,7 @@ export default {
 
   methods: {
     openKeybindingWiki () {
-      shell.openExternal('https://github.com/marktext/marktext/blob/master/docs/KEYBINDINGS.md')
+      openExternal('https://github.com/marktext/marktext/blob/master/docs/KEYBINDINGS.md')
     },
     saveKeybindings () {
       if (this.keybindingConfigurator && this.keybindingList.length > 0) {
@@ -162,7 +162,7 @@ export default {
       })
     },
     dumpKeyboardInformation () {
-      ipcRenderer.send('mt::keybinding-debug-dump-keyboard-info')
+      invoke('keybinding_debug_dump_keyboard_info')
     }
   }
 }

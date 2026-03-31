@@ -1,7 +1,6 @@
-import { ipcRenderer } from 'electron'
-import log from 'electron-log'
 import bus from '../bus'
 import staticCommands, { RootCommand } from '../commands'
+import { onEvent } from '@/services/tauri-events'
 
 const state = {
   rootCommand: new RootCommand(staticCommands)
@@ -20,11 +19,10 @@ const mutations = {
 
 const actions = {
   LISTEN_COMMAND_CENTER_BUS ({ commit, state }) {
-    // Init stuff
     bus.$on('cmd::sort-commands', () => {
       commit('SORT_COMMANDS')
     })
-    ipcRenderer.on('mt::keybindings-response', (e, keybindingMap) => {
+    onEvent('mt::keybindings-response', (keybindingMap) => {
       const { subcommands } = state.rootCommand
       for (const entry of subcommands) {
         const value = keybindingMap[entry.id]
@@ -34,16 +32,14 @@ const actions = {
       }
     })
 
-    // Register commands that are created at runtime.
     bus.$on('cmd::register-command', command => {
       commit('REGISTER_COMMAND', command)
     })
 
-    // Allow other compontents to execute commands with predefined values.
     bus.$on('cmd::execute', commandId => {
       executeCommand(state, commandId)
     })
-    ipcRenderer.on('mt::execute-command-by-id', (e, commandId) => {
+    onEvent('mt::execute-command-by-id', (commandId) => {
       executeCommand(state, commandId)
     })
   }
@@ -54,7 +50,7 @@ const executeCommand = (state, commandId) => {
   const command = subcommands.find(c => c.id === commandId)
   if (!command) {
     const errorMsg = `Cannot execute command "${commandId}" because it's missing.`
-    log.error(errorMsg)
+    console.error(errorMsg)
     throw new Error(errorMsg)
   }
   command.execute()

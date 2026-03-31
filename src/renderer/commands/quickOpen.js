@@ -1,5 +1,5 @@
 import path from 'path'
-import { ipcRenderer } from 'electron'
+import { emitEvent } from '@/services/tauri-events'
 import { isChildOfDirectory, hasMarkdownExtension, MARKDOWN_INCLUSIONS } from '../../common/filesystem/paths'
 import bus from '../bus'
 import { delay } from '@/util'
@@ -73,7 +73,7 @@ class QuickOpenCommand {
 
   executeSubcommand = async id => {
     const { windowId } = global.marktext.env
-    ipcRenderer.send('mt::open-file-by-window-id', windowId, id)
+    emitEvent('mt::open-file-by-window-id', windowId, id)
   }
 
   unload = () => {

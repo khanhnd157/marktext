@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { shell } from 'electron'
+import { openExternal } from '@/services/tauri-api'
 
 // Example of fontmanager-redux objects:
 // {
@@ -95,7 +95,7 @@ export default {
 
     handleMoreClick () {
       if (typeof this.more === 'string') {
-        shell.openExternal(this.more)
+        openExternal(this.more)
       }
     }
   },

@@ -35,7 +35,7 @@
 
 <script>
 import bus from '@/bus'
-import { ipcRenderer } from 'electron'
+import { handleDroppedFiles } from '@/services/tauri-api'
 import importIcon from '@/assets/icons/import_file.svg'
 
 export default {
@@ -71,7 +71,7 @@ export default {
         for (const file of e.dataTransfer.files) {
           fileList.push(file.path)
         }
-        ipcRenderer.send('mt::window::drop', fileList)
+        handleDroppedFiles(fileList)
       }
     }
   }

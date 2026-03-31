@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron'
+import { invoke } from '@/services/tauri-api'
 import { isEqualAccelerator } from 'common/keybinding'
 import getCommandDescriptionById from '@/commands/descriptions'
 import { isOsx } from '@/util'
@@ -66,7 +66,7 @@ export default class KeybindingConfigurator {
     }
 
     const userKeybindings = this._getUserKeybindingMap()
-    const result = await ipcRenderer.invoke('mt::keybinding-save-user-keybindings', userKeybindings)
+    const result = await invoke('keybinding_save_user_keybindings', userKeybindings)
     if (result) {
       this.isDirty = false
       return true

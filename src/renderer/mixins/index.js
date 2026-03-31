@@ -1,4 +1,4 @@
-import { ipcRenderer } from 'electron'
+import { emitEvent } from '@/services/tauri-events'
 import { isSamePathSync } from 'common/filesystem/paths'
 import bus from '../bus'
 
@@ -59,7 +59,7 @@ export const fileMixins = {
           bus.$emit('file-changed', { id, markdown, cursor, renderCursor: true, history })
         }
       } else {
-        ipcRenderer.send('mt::open-file', filePath, {
+        emitEvent('mt::open-file', filePath, {
           cursor
         })
       }
@@ -74,7 +74,7 @@ export const fileMixins = {
         }
         this.$store.dispatch('UPDATE_CURRENT_FILE', openedTab)
       } else {
-        ipcRenderer.send('mt::open-file', pathname, {})
+        emitEvent('mt::open-file', pathname, {})
       }
     }
   }

@@ -1,5 +1,4 @@
 import path from 'path'
-import { ipcRenderer, shell } from 'electron'
 import { addFile, unlinkFile, addDirectory, unlinkDirectory } from './treeCtrl'
 import bus from '../bus'
 import { create, paste, rename } from '../util/fileSystem'
@@ -7,11 +6,12 @@ import { PATH_SEPARATOR } from '../config'
 import notice from '../services/notification'
 import { getFileStateFromData } from './help'
 import { hasMarkdownExtension } from '../../common/filesystem/paths'
+import { showOpenFolderDialog, trashItem, showItemInFolder, createSettingsWindow } from '@/services/tauri-api'
+import { onEvent } from '@/services/tauri-events'
 
 const state = {
   activeItem: {},
   createCache: {},
-  // Use to cache newly created filename, for open immediately.
   newFileNameCache: '',
   renameCache: null,
   clipboard: null,
@@ -24,14 +24,11 @@ const mutations = {
   SET_ROOT_DIRECTORY (state, pathname) {
     let name = path.basename(pathname)
     if (!name) {
-      // Root directory such "/" or "C:\"
       name = pathname
     }
 
     state.projectTree = {
-      // Root full path
       pathname: path.normalize(pathname),
-      // Root directory name
       name,
       isDirectory: true,
       isFile: false,
@@ -75,7 +72,7 @@ const mutations = {
 
 const actions = {
   LISTEN_FOR_LOAD_PROJECT ({ commit, dispatch }) {
-    ipcRenderer.on('mt::open-directory', (e, pathname) => {
+    onEvent('mt::open-directory', (pathname) => {
       commit('SET_ROOT_DIRECTORY', pathname)
       commit('SET_LAYOUT', {
         rightColumn: 'files',
@@ -86,7 +83,7 @@ const actions = {
     })
   },
   LISTEN_FOR_UPDATE_PROJECT ({ commit, state, dispatch }) {
-    ipcRenderer.on('mt::update-object-tree', (e, { type, change }) => {
+    onEvent('mt::update-object-tree', ({ type, change }) => {
       switch (type) {
         case 'add': {
           const { pathname, data, isMarkdown } = change
@@ -111,9 +108,6 @@ const actions = {
         case 'change':
           break
         default:
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`Unknown directory watch type: "${type}"`)
-          }
           break
       }
     })
@@ -124,13 +118,22 @@ const actions = {
   CHANGE_CLIPBOARD ({ commit }, data) {
     commit('SET_CLIPBOARD', data)
   },
-  ASK_FOR_OPEN_PROJECT ({ commit }) {
-    ipcRenderer.send('mt::ask-for-open-project-in-sidebar')
+  async ASK_FOR_OPEN_PROJECT ({ commit }) {
+    const folder = await showOpenFolderDialog()
+    if (folder) {
+      onEvent._lastOpenDir = folder
+      commit('SET_ROOT_DIRECTORY', folder)
+      commit('SET_LAYOUT', {
+        rightColumn: 'files',
+        showSideBar: true,
+        showTabBar: true
+      })
+    }
   },
   LISTEN_FOR_SIDEBAR_CONTEXT_MENU ({ commit, state }) {
     bus.$on('SIDEBAR::show-in-folder', () => {
       const { pathname } = state.activeItem
-      shell.showItemInFolder(pathname)
+      showItemInFolder(pathname)
     })
     bus.$on('SIDEBAR::new', type => {
       const { pathname, isDirectory } = state.activeItem
@@ -140,7 +143,7 @@ const actions = {
     })
     bus.$on('SIDEBAR::remove', () => {
       const { pathname } = state.activeItem
-      ipcRenderer.invoke('mt::fs-trash-item', pathname).catch(err => {
+      trashItem(pathname).catch(err => {
         notice.notify({
           title: 'Error while deleting',
           type: 'error',
@@ -224,7 +227,7 @@ const actions = {
   },
 
   OPEN_SETTING_WINDOW () {
-    ipcRenderer.send('mt::open-setting-window')
+    createSettingsWindow()
   }
 }
 

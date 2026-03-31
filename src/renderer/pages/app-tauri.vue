@@ -38,7 +38,7 @@ import { listen } from '@tauri-apps/api/event'
 import { invoke } from '@tauri-apps/api/core'
 import { open, save } from '@tauri-apps/plugin-dialog'
 import { appDataDir } from '@tauri-apps/api/path'
-import { ipcRenderer } from 'electron'
+import { emitEvent } from '@/services/tauri-events'
 import { addStyles, addThemeStyle } from '@/util/theme'
 import bus from '@/bus'
 import Recent from '@/components/recent'
@@ -143,7 +143,7 @@ export default {
     listen('fs-change', (event) => {
       const { path: filePath, kind } = event.payload || {}
       if (filePath && kind) {
-        ipcRenderer._dispatch('mt::update-file', { type: kind, change: { path: filePath } })
+        emitEvent('mt::update-file', { type: kind, change: { pathname: filePath, data: { markdown: '', filename: filePath.split(/[/\\]/).pop() } } })
       }
     })
 
