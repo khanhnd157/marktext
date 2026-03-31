@@ -15,3 +15,7 @@ thumbs.db
 .idea
 .env
 .eslintcache
+
+# Tauri
+src-tauri/target/
+src-tauri/gen/

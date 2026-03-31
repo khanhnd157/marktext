@@ -154,6 +154,7 @@ export const deepClone = obj => {
   return JSON.parse(JSON.stringify(obj))
 }
 
-export const isOsx = process.platform === 'darwin'
-export const isWindows = process.platform === 'win32'
-export const isLinux = process.platform === 'linux'
+const _platform = typeof process !== 'undefined' ? process.platform : (navigator.platform.includes('Mac') ? 'darwin' : navigator.platform.includes('Win') ? 'win32' : 'linux')
+export const isOsx = _platform === 'darwin'
+export const isWindows = _platform === 'win32'
+export const isLinux = _platform === 'linux'

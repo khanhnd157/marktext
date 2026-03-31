@@ -356,7 +356,7 @@ span.ag-math > .ag-math-render.ag-math-error {
   box-shadow: var(--floatShadow);
 }
 
-.ag-gray.ag-ruby > .ag-ruby-render::before
+.ag-gray.ag-ruby > .ag-ruby-render::before,
 .ag-gray.ag-math > .ag-math-render::before {
   border-width: 5px;
   border-style: solid;
@@ -368,7 +368,7 @@ span.ag-math > .ag-math-render.ag-math-error {
   content: "";
 }
 
-.ag-hide.ag-ruby > .ag-ruby-render::before
+.ag-hide.ag-ruby > .ag-ruby-render::before,
 .ag-hide.ag-math > .ag-math-render::before {
   content: none;
 }

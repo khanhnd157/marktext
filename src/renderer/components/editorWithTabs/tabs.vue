@@ -176,6 +176,14 @@ export default {
     })
   },
   beforeUnmount () {
+    bus.$off('TABS::close-this', this.closeTab)
+    bus.$off('TABS::close-others', this.closeOthers)
+    bus.$off('TABS::close-saved', this.closeSaved)
+    bus.$off('TABS::close-all', this.closeAll)
+    bus.$off('TABS::rename', this.rename)
+    bus.$off('TABS::copy-path', this.copyPath)
+    bus.$off('TABS::show-in-folder', this.showInFolder)
+
     const tabs = this.$refs.tabContainer
     tabs.removeEventListener('wheel', this.handleTabScroll)
 
@@ -186,15 +194,6 @@ export default {
     if (this.drake) {
       this.drake.destroy()
     }
-  },
-  beforeDestroy () {
-    bus.$off('TABS::close-this', this.closeTab)
-    bus.$off('TABS::close-others', this.closeOthers)
-    bus.$off('TABS::close-saved', this.closeSaved)
-    bus.$off('TABS::close-all', this.closeAll)
-    bus.$off('TABS::rename', this.rename)
-    bus.$off('TABS::copy-path', this.copyPath)
-    bus.$off('TABS::show-in-folder', this.showInFolder)
   }
 }
 </script>

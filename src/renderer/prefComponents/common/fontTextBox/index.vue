@@ -101,12 +101,16 @@ export default {
   },
   mounted () {
     // Delay load native library because it's not needed for the editor and causes a delay.
-    const fontManager = require('fontmanager-redux')
-    const { onlyMonospace } = this
-    const buf = fontManager.getAvailableFontsSync()
-      .filter(f => f.family && (!onlyMonospace || (onlyMonospace && f.monospace)))
-      .map(f => f.family)
-    this.fontFamilies = [...new Set(buf)].sort((a, b) => a.localeCompare(b))
+    import('fontmanager-redux').then(fontManager => {
+      const mod = fontManager.default || fontManager
+      const { onlyMonospace } = this
+      const buf = (mod.getAvailableFontsSync ? mod.getAvailableFontsSync() : mod.getAvailableFonts ? mod.getAvailableFonts() : [])
+        .filter(f => f.family && (!onlyMonospace || (onlyMonospace && f.monospace)))
+        .map(f => f.family)
+      this.fontFamilies = [...new Set(buf)].sort((a, b) => a.localeCompare(b))
+    }).catch(() => {
+      this.fontFamilies = ['Arial', 'Courier New', 'Georgia', 'Helvetica', 'Monaco', 'Consolas', 'Fira Code']
+    })
   }
 }
 </script>

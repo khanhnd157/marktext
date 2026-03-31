@@ -1,5 +1,4 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createStore } from 'vuex'
 import { ipcRenderer } from 'electron'
 
 import listenForMain from './listenForMain'
@@ -12,14 +11,11 @@ import notification from './notification'
 import tweet from './tweet'
 import commandCenter from './commandCenter'
 
-Vue.use(Vuex)
-
-// global states
 const state = {
-  platform: process.platform, // platform of system `darwin` | `win32` | `linux`
-  appVersion: process.versions.MARKTEXT_VERSION_STRING, // MarkText version string
-  windowActive: true, // whether current window is active or focused
-  init: false // whether MarkText is initialized
+  platform: process.platform,
+  appVersion: (process.versions && process.versions.MARKTEXT_VERSION_STRING) || '0.17.1',
+  windowActive: true,
+  init: false
 }
 
 const getters = {}
@@ -45,18 +41,16 @@ const actions = {
   }
 }
 
-const store = new Vuex.Store({
+const store = createStore({
   state,
   getters,
   mutations,
   actions,
   modules: {
-    // have no states
     listenForMain,
     autoUpdates,
     notification,
     tweet,
-    // have states
     project,
     preferences,
     editor,

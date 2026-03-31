@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MarkText</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      ;(function() {
+        var p = navigator.platform || '';
+        var platform = p.indexOf('Win') !== -1 ? 'win32' : p.indexOf('Mac') !== -1 ? 'darwin' : 'linux';
+        if (typeof globalThis.process === 'undefined') {
+          globalThis.process = {
+            platform: platform,
+            env: { NODE_ENV: 'development' },
+            versions: { MARKTEXT_VERSION_STRING: '0.17.1' },
+            resourcesPath: '',
+            cwd: function() { return '/'; },
+            type: 'renderer',
+            nextTick: function(fn) { Promise.resolve().then(fn); },
+            argv: [],
+            stdout: { write: function(){} },
+            stderr: { write: function(){} }
+          };
+        }
+        if (typeof globalThis.global === 'undefined') globalThis.global = globalThis;
+      })();
+    </script>
+    <script type="module" src="/src/renderer/main-tauri.js"></script>
+  </body>
+</html>
