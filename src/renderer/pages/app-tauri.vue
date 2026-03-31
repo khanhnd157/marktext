@@ -1,33 +1,33 @@
 <template>
-  <div class="editor-container">
-    <side-bar></side-bar>
-    <div class="editor-middle">
-      <title-bar
-        :project="projectTree"
-        :pathname="pathname"
-        :filename="filename"
-        :active="windowActive"
-        :word-count="wordCount"
-        :platform="platform"
-        :is-saved="isSaved"
-      ></title-bar>
-      <div class="editor-placeholder" v-if="!init"></div>
-      <recent v-if="!hasCurrentFile && init"></recent>
-      <editor-with-tabs
-        v-if="hasCurrentFile && init"
-        :markdown="markdown"
-        :cursor="cursor"
-        :source-code="sourceCode"
-        :show-tab-bar="showTabBar"
-        :text-direction="textDirection"
-        :platform="platform"
-      ></editor-with-tabs>
-      <command-palette></command-palette>
-      <about-dialog></about-dialog>
-      <export-setting-dialog></export-setting-dialog>
-      <rename-dialog></rename-dialog>
-      <tweet></tweet>
-      <import-modal></import-modal>
+  <div class="app-layout">
+    <title-bar
+      :pathname="pathname"
+      :filename="filename"
+      :active="windowActive"
+      :word-count="wordCount"
+      :is-saved="isSaved"
+    ></title-bar>
+    <div class="editor-container">
+      <side-bar></side-bar>
+      <div class="editor-middle">
+        <div class="editor-placeholder" v-if="!init"></div>
+        <recent v-if="!hasCurrentFile && init"></recent>
+        <editor-with-tabs
+          v-if="hasCurrentFile && init"
+          :markdown="markdown"
+          :cursor="cursor"
+          :source-code="sourceCode"
+          :show-tab-bar="showTabBar"
+          :text-direction="textDirection"
+          :platform="platform"
+        ></editor-with-tabs>
+        <command-palette></command-palette>
+        <about-dialog></about-dialog>
+        <export-setting-dialog></export-setting-dialog>
+        <rename-dialog></rename-dialog>
+        <tweet></tweet>
+        <import-modal></import-modal>
+      </div>
     </div>
   </div>
 </template>
@@ -611,14 +611,16 @@ export default {
 </script>
 
 <style scoped>
-  .editor-placeholder,
+  .app-layout {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
   .editor-container {
     display: flex;
     flex-direction: row;
     position: absolute;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
+    top: var(--titleBarHeight);
     left: 0;
     right: 0;
     bottom: 0;
@@ -631,13 +633,14 @@ export default {
   }
   .editor-placeholder {
     background: var(--editorBgColor);
+    flex: 1;
   }
   .editor-middle {
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-height: 100vh;
     position: relative;
+    min-width: 0;
     & > .editor {
       flex: 1;
     }
