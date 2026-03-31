@@ -28,9 +28,21 @@ export const promises = {
   rename: async () => {},
   unlink: async () => {},
 }
+export const ensureDir = async () => {}
+export const ensureDirSync = noop
+export const outputFile = async () => {}
+export const move = async () => {}
+export const copy = async () => {}
+export const pathExists = async () => false
+export const pathExistsSync = () => false
+export const remove = async () => {}
+export const removeSync = noop
+
 export default {
   readFileSync, writeFileSync, existsSync, mkdirSync,
   readdirSync, statSync, readFile, writeFile, mkdir,
   readdir, stat, rename, unlink, createReadStream,
-  createWriteStream, watch, promises
+  createWriteStream, watch, promises, constants,
+  ensureDir, ensureDirSync, outputFile, move, copy,
+  pathExists, pathExistsSync, remove, removeSync
 }

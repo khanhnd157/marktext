@@ -165,6 +165,31 @@ pub async fn trash_item(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub async fn create_directory(path: String) -> Result<(), String> {
+    tokio::fs::create_dir_all(&path)
+        .await
+        .map_err(|e| format!("Failed to create directory: {}", e))
+}
+
+#[tauri::command]
+pub async fn copy_file(src: String, dest: String) -> Result<(), String> {
+    if let Some(parent) = PathBuf::from(&dest).parent() {
+        tokio::fs::create_dir_all(parent)
+            .await
+            .map_err(|e| format!("Failed to create parent dir: {}", e))?;
+    }
+    tokio::fs::copy(&src, &dest)
+        .await
+        .map_err(|e| format!("Failed to copy file: {}", e))?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn file_exists(path: String) -> Result<bool, String> {
+    Ok(PathBuf::from(&path).exists())
+}
+
+#[tauri::command]
 pub async fn detect_encoding(path: String) -> Result<String, String> {
     let raw_bytes = tokio::fs::read(&path)
         .await

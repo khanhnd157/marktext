@@ -35,8 +35,10 @@ export function getCurrentWindow () {
 export class Menu {
   static buildFromTemplate () { return new Menu() }
   static setApplicationMenu () {}
+  static getApplicationMenu () { return new Menu() }
   popup () {}
   append () {}
+  items = []
 }
 
 export class MenuItem {

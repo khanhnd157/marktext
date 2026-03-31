@@ -1189,8 +1189,19 @@ const actions = {
     })
   },
 
-  ASK_FOR_IMAGE_PATH ({ commit }) {
-    return ipcRenderer.sendSync('mt::ask-for-image-path')
+  async ASK_FOR_IMAGE_PATH ({ commit }) {
+    try {
+      const { open } = await import('@tauri-apps/plugin-dialog')
+      const selected = await open({
+        multiple: false,
+        filters: [
+          { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico', 'tiff'] }
+        ]
+      })
+      return selected || ''
+    } catch (e) {
+      return ''
+    }
   },
 
   LISTEN_WINDOW_ZOOM ({ dispatch, rootState }) {
